@@ -4,8 +4,9 @@
   <name>rosbot_controller</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
-  <maintainer email="hridoy@todo.todo">hridoy</maintainer>
-  <license>TODO: License declaration</license>
+  <maintainer email="hridoyq264@gmail.com">hridoy</maintainer>
+  <license>Apache-2.0 </license>
+
 
   <depend>rclpy</depend>
   <depend>geometry_msgs</depend>
