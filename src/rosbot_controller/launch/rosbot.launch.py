@@ -12,12 +12,6 @@ def generate_launch_description():
         output = 'screen'
     )
 
-    cmd_vel = Node(
-        package='rosbot_controller',
-        executable='cmd_vel_node',
-        name = 'cmd_vel'
-    )
-
     motor_driver = Node(
         package='rosbot_controller',
         executable='motor_driver_node', 
@@ -25,6 +19,5 @@ def generate_launch_description():
     )
     return LaunchDescription([
         motor_driver,
-        teleop,
-        cmd_vel    
+        teleop   
     ])

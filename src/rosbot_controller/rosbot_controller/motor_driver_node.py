@@ -1,16 +1,16 @@
 import rclpy
 from rclpy.node import Node
-from geometry_msgs.msg import Vector3
+from geometry_msgs.msg import Twist
 import gpiod
 from gpiozero import PWMOutputDevice
 
 class MotorDriverNode(Node):
     def __init__(self):
         super().__init__('motor_driver_node')
-        self.MAX_SPEED = 0.6   # 60% max speed
+        self.MAX_SPEED = 1.2   # 120% max speed
         self.subscription = self.create_subscription(
-            Vector3,
-            '/motor_cmd',
+            Twist,
+            '/cmd_vel',
             self.motor_callback,
             10
         )
@@ -67,19 +67,26 @@ class MotorDriverNode(Node):
             self.IN4.set_value(0)
 
     def set_speed(self, left_speed, right_speed):
-    # clamp between 0 and 1 first
-    left_speed = max(0.0, min(1.0, left_speed))
-    right_speed = max(0.0, min(1.0, right_speed))
+        # clamp between 0 and 1 first
+        left_speed = max(0.0, min(1.0, left_speed))
+        right_speed = max(0.0, min(1.0, right_speed))
 
-    # apply max speed scaling
-    left_speed *= self.MAX_SPEED
-    right_speed *= self.MAX_SPEED
+        # apply max speed scaling
+        left_speed *= self.MAX_SPEED
+        right_speed *= self.MAX_SPEED
 
-    self.ENA.value = left_speed
-    self.ENB.value = right_speed
+        self.ENA.value = left_speed
+        self.ENB.value = right_speed
     def motor_callback(self, msg):
-        left = msg.x
-        right = msg.y
+        linear = msg.linear.x
+        angular = msg.angular.z
+
+        left = linear-angular
+        right = linear+angular
+
+        max_val = max(abs(left), abs(right), 1.0)
+        left /= max_val
+        right /= max_val
 
         self.set_direction(left, right)
         self.set_speed(abs(left), abs(right))
